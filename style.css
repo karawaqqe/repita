@@ -1,0 +1,1253 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+body {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-rows: 0 minmax(0, 1fr) 0;
+    background: #000;
+}
+
+header,
+footer {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 0;
+    background: #000;
+}
+
+.access-gate {
+    position: fixed;
+    z-index: 100;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 48%, rgba(91, 53, 15, 0.2), transparent 39%),
+        #020201;
+    transition:
+        opacity 1200ms ease,
+        visibility 1200ms ease;
+}
+
+.access-gate::before,
+.access-gate::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+}
+
+.access-gate::before {
+    inset: -20%;
+    opacity: 0.3;
+    background-image:
+        radial-gradient(circle, rgba(207, 154, 67, 0.65) 0 0.8px, transparent 1.6px),
+        radial-gradient(circle, rgba(120, 75, 25, 0.6) 0 1.2px, transparent 2px);
+    background-position: 13% 21%, 77% 64%;
+    background-size: 193px 251px, 337px 289px;
+    animation: gate-dust 34s ease-in-out infinite alternate;
+}
+
+.access-gate::after {
+    inset: 0;
+    box-shadow: inset 0 0 20vw rgba(0, 0, 0, 0.95);
+}
+
+.access-gate--opening {
+    background-color: #000;
+}
+
+.access-gate--opening .sealed-book {
+    animation: chronicle-open 1800ms cubic-bezier(0.17, 0.67, 0.24, 1) forwards;
+}
+
+.access-gate--opening .sealed-book > img {
+    animation: cover-unseal 1450ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.access-gate--opening .access-form {
+    opacity: 0;
+    transform: translateY(18px);
+}
+
+.access-gate--opening .sealed-book::before,
+.access-gate--opening .sealed-book::after {
+    opacity: 1;
+    animation: broken-chain 900ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.access-gate--open {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.access-gate--denied {
+    animation: denied-darkness 650ms ease;
+}
+
+.access-gate--denied .sealed-book {
+    animation: sealed-shake 520ms ease;
+}
+
+.sealed-book {
+    position: relative;
+    z-index: 1;
+    width: min(97vw, 960px);
+    height: min(97vh, 1190px);
+    transform-origin: center;
+    perspective: 1400px;
+    filter:
+        drop-shadow(0 0 18px rgba(179, 116, 34, 0.2))
+        drop-shadow(0 24px 42px rgba(0, 0, 0, 0.85));
+}
+
+.sealed-book::before,
+.sealed-book::after {
+    content: "";
+    position: absolute;
+    z-index: 5;
+    top: 52%;
+    width: 46%;
+    height: 13px;
+    opacity: 0;
+    border: 2px solid #6b461e;
+    border-radius: 50%;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            #1d1208 0 12px,
+            #95672d 12px 16px,
+            #211307 16px 30px
+        );
+    box-shadow:
+        inset 0 0 5px rgba(255, 203, 112, 0.32),
+        0 3px 8px rgba(0, 0, 0, 0.9);
+}
+
+.sealed-book::before {
+    left: 4%;
+    transform: rotate(34deg);
+}
+
+.sealed-book::after {
+    right: 4%;
+    transform: rotate(-34deg);
+}
+
+.sealed-book > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform-origin: 21% center;
+    backface-visibility: hidden;
+}
+
+.access-form {
+    position: absolute;
+    z-index: 6;
+    right: 15%;
+    bottom: 0.8%;
+    left: 15%;
+    display: grid;
+    justify-items: center;
+    gap: clamp(7px, 1vh, 12px);
+    padding: 18px 20px 10px;
+    background: linear-gradient(180deg, rgba(2, 2, 1, 0.92), rgba(2, 2, 1, 0.98));
+    box-shadow: 0 -18px 24px rgba(2, 2, 1, 0.92);
+    transition:
+        opacity 450ms ease,
+        transform 450ms ease;
+}
+
+.access-form__message {
+    min-height: 1.4em;
+    margin: 0;
+    color: rgba(203, 158, 87, 0.82);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(11px, 1.2vw, 15px);
+    letter-spacing: 0.18em;
+    text-align: center;
+    text-transform: uppercase;
+    transition:
+        color 300ms ease,
+        text-shadow 300ms ease;
+}
+
+.access-gate--denied .access-form__message {
+    color: rgba(132, 42, 29, 0.95);
+    text-shadow: 0 0 8px rgba(130, 24, 12, 0.48);
+}
+
+.access-code {
+    display: grid;
+    grid-template-columns: repeat(8, clamp(34px, 4.3vw, 52px));
+    gap: clamp(5px, 0.8vw, 10px);
+}
+
+.access-code input {
+    width: 100%;
+    aspect-ratio: 0.9;
+    border: 1px solid rgba(151, 109, 52, 0.48);
+    border-radius: 3px;
+    outline: 0;
+    color: #d8ad65;
+    background: rgba(7, 5, 2, 0.78);
+    box-shadow:
+        inset 0 0 14px rgba(142, 91, 28, 0.08),
+        0 0 0 transparent;
+    caret-color: #d7a44f;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(18px, 2vw, 27px);
+    text-align: center;
+    text-transform: lowercase;
+    transition:
+        border-color 240ms ease,
+        box-shadow 240ms ease,
+        color 240ms ease;
+}
+
+.access-code input:hover,
+.access-code input:focus {
+    border-color: rgba(226, 175, 91, 0.88);
+    color: #f0c779;
+    box-shadow:
+        inset 0 0 16px rgba(185, 120, 36, 0.16),
+        0 0 12px rgba(186, 118, 31, 0.28);
+}
+
+.access-code .access-code__seal {
+    color: rgba(149, 108, 49, 0.65);
+    cursor: default;
+}
+
+.access-submit {
+    min-width: min(290px, 68vw);
+    padding: 11px 30px;
+    border: 1px solid rgba(154, 106, 42, 0.5);
+    border-radius: 3px;
+    color: rgba(207, 163, 91, 0.78);
+    background:
+        linear-gradient(180deg, rgba(45, 29, 10, 0.54), rgba(12, 7, 2, 0.82));
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(11px, 1.2vw, 15px);
+    letter-spacing: 0.18em;
+    cursor: pointer;
+    transition:
+        color 250ms ease,
+        border-color 250ms ease,
+        box-shadow 250ms ease;
+}
+
+.access-submit:hover,
+.access-submit:focus-visible {
+    border-color: rgba(224, 169, 79, 0.82);
+    color: #edbf70;
+    box-shadow: 0 0 15px rgba(171, 101, 21, 0.27);
+    outline: none;
+}
+
+.background,
+.atmosphere {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
+
+.background {
+    z-index: 0;
+    background-color: #020201;
+    background-image: url("./img/background/newbackv2.png");
+    background-position: left center;
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    animation: cinematic-zoom 28s ease-in-out infinite alternate;
+}
+
+.atmosphere {
+    z-index: 1;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 19% 49%, rgba(209, 151, 49, 0.08), transparent 24%),
+        radial-gradient(ellipse at 68% 75%, rgba(105, 78, 37, 0.08), transparent 38%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.2), transparent 42%, rgba(0, 0, 0, 0.35));
+}
+
+.atmosphere::before,
+.atmosphere::after {
+    content: "";
+    position: absolute;
+    inset: -15%;
+}
+
+.atmosphere::before {
+    opacity: 0.38;
+    background-image:
+        radial-gradient(ellipse, rgba(240, 187, 82, 0.75) 0 0.8px, transparent 1.7px),
+        radial-gradient(circle, rgba(172, 117, 37, 0.62) 0 1.2px, transparent 2px),
+        radial-gradient(ellipse, rgba(224, 181, 104, 0.42) 0 0.6px, transparent 1.4px),
+        radial-gradient(circle, rgba(132, 81, 22, 0.55) 0 1.5px, transparent 2.3px);
+    background-position: 7% 13%, 41% 72%, 88% 24%, 63% 91%;
+    background-size: 197px 263px, 331px 287px, 151px 223px, 419px 367px;
+    animation: drifting-dust 38s ease-in-out infinite alternate;
+}
+
+.atmosphere::after {
+    opacity: 0.2;
+    filter: blur(45px);
+    background:
+        radial-gradient(ellipse at 22% 52%, rgba(155, 116, 58, 0.28), transparent 37%),
+        radial-gradient(ellipse at 69% 58%, rgba(115, 100, 75, 0.16), transparent 42%);
+    animation: ambient-fog 20s ease-in-out infinite alternate;
+}
+
+main {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: transparent;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+
+main::-webkit-scrollbar {
+    display: none;
+}
+
+.page {
+    position: relative;
+    isolation: isolate;
+    flex: 0 0 100vw;
+    width: 100vw;
+    height: 100%;
+    scroll-snap-align: start;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: clamp(140px, 21vw, 420px);
+}
+
+.page::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: min(52vw, 850px);
+    height: 84%;
+    background: radial-gradient(
+        ellipse,
+        rgba(205, 148, 42, 0.28) 0%,
+        rgba(150, 92, 18, 0.13) 42%,
+        transparent 72%
+    );
+    filter: blur(36px);
+    transform: translateX(clamp(70px, 10vw, 200px));
+    animation: breathing-glow 5s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+.page img {
+    position: relative;
+    display: block;
+    width: auto;
+    height: 94%;
+    max-width: 92vw;
+    object-fit: contain;
+    filter:
+        drop-shadow(0 0 8px rgba(237, 184, 73, 0.4))
+        drop-shadow(0 0 24px rgba(154, 91, 17, 0.28));
+    transition: filter 500ms ease;
+}
+
+.magnifier {
+    --lens-size: 280px;
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: var(--lens-size);
+    height: var(--lens-size);
+    border: 8px solid transparent;
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform;
+    transition: opacity 260ms ease;
+    background:
+        linear-gradient(#090603, #090603) padding-box,
+        conic-gradient(
+            from 25deg,
+            #4c2c09,
+            #d9a74a,
+            #6e4313,
+            #f0cf7a,
+            #422406,
+            #bb7b25,
+            #4c2c09
+        ) border-box;
+    box-shadow:
+        0 0 0 2px rgba(37, 20, 4, 0.95),
+        0 0 0 5px rgba(142, 92, 24, 0.58),
+        inset 0 0 12px rgba(255, 213, 124, 0.4),
+        inset 0 0 30px rgba(20, 11, 2, 0.7),
+        0 0 15px rgba(240, 181, 68, 0.48),
+        0 0 44px rgba(143, 83, 17, 0.42),
+        18px 24px 35px rgba(0, 0, 0, 0.72);
+}
+
+.magnifier--visible {
+    opacity: 1;
+}
+
+.magnifier__glass {
+    position: absolute;
+    inset: 2px;
+    overflow: hidden;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    filter: contrast(1.13) brightness(1.12) saturate(0.88);
+    box-shadow:
+        inset 0 0 22px rgba(255, 225, 157, 0.22),
+        inset 0 0 34px rgba(14, 7, 1, 0.44);
+}
+
+.magnifier__glass::before,
+.magnifier__glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+}
+
+.magnifier__glass::before {
+    opacity: 0.2;
+    mix-blend-mode: screen;
+    background:
+        linear-gradient(112deg, transparent 13%, rgba(255, 244, 211, 0.55) 16%, transparent 19%),
+        radial-gradient(circle at 31% 25%, rgba(255, 255, 245, 0.28), transparent 22%),
+        radial-gradient(circle at 70% 74%, transparent 45%, rgba(44, 26, 5, 0.18) 72%);
+}
+
+.magnifier__glass::after {
+    opacity: 0.24;
+    background:
+        linear-gradient(73deg, transparent 38%, rgba(63, 42, 18, 0.7) 39%, transparent 40%),
+        linear-gradient(121deg, transparent 57%, rgba(255, 233, 177, 0.4) 58%, transparent 59%),
+        linear-gradient(28deg, transparent 68%, rgba(64, 40, 15, 0.6) 69%, transparent 70%);
+}
+
+.magnifier__runes {
+    position: absolute;
+    inset: -5px;
+    border: 1px dashed rgba(240, 197, 105, 0.52);
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: rotate-runes 45s linear infinite;
+}
+
+.magnifier__runes::before,
+.magnifier__runes::after {
+    content: "✦";
+    position: absolute;
+    color: #e4b65f;
+    font-size: 12px;
+    text-shadow: 0 0 7px rgba(255, 194, 73, 0.9);
+}
+
+.magnifier__runes::before {
+    top: 15px;
+    left: 18px;
+}
+
+.magnifier__runes::after {
+    right: 15px;
+    bottom: 18px;
+}
+
+.magnifier__handle {
+    position: absolute;
+    z-index: -1;
+    right: -24px;
+    bottom: -82px;
+    width: 32px;
+    height: 108px;
+    border: 3px solid #b27a2b;
+    border-radius: 8px 8px 18px 18px;
+    transform: rotate(-38deg);
+    transform-origin: top center;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 213, 120, 0.16) 0 2px,
+            transparent 2px 7px
+        ),
+        linear-gradient(90deg, #1d1004, #9b681f 38%, #3e2208 72%, #120a03);
+    box-shadow:
+        inset 0 0 8px rgba(255, 207, 108, 0.38),
+        0 0 14px rgba(167, 99, 22, 0.35),
+        7px 12px 16px rgba(0, 0, 0, 0.6);
+}
+
+.lantern {
+    position: fixed;
+    z-index: 11;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 350px;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform;
+    transition: opacity 360ms ease;
+}
+
+.lantern--visible {
+    opacity: 1;
+}
+
+.lantern__light {
+    position: absolute;
+    top: 135px;
+    left: 113px;
+    width: 680px;
+    height: 680px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.82;
+    background:
+        radial-gradient(
+            circle,
+            rgba(255, 177, 72, 0.34) 0%,
+            rgba(238, 111, 17, 0.22) 22%,
+            rgba(172, 66, 4, 0.095) 47%,
+            transparent 72%
+        );
+    filter: blur(4px);
+    animation: lantern-breath 4.8s ease-in-out infinite alternate;
+}
+
+.lantern__light::before {
+    content: "";
+    position: absolute;
+    inset: 15%;
+    border-radius: 50%;
+    opacity: 0.7;
+    background-image:
+        radial-gradient(ellipse, rgba(255, 194, 91, 0.9) 0 0.9px, transparent 1.7px),
+        radial-gradient(circle, rgba(231, 112, 23, 0.78) 0 1.3px, transparent 2px),
+        radial-gradient(ellipse, rgba(255, 146, 38, 0.68) 0 0.7px, transparent 1.5px);
+    background-position: 11% 19%, 72% 64%, 43% 88%;
+    background-size: 107px 143px, 179px 131px, 89px 167px;
+    animation: lantern-dust 13s ease-in-out infinite alternate;
+}
+
+.lantern__light::after {
+    content: "";
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    opacity: 0.46;
+    background-image:
+        radial-gradient(circle, rgba(255, 153, 46, 0.78) 0 1.4px, transparent 2.2px),
+        radial-gradient(ellipse, rgba(201, 76, 9, 0.58) 0 0.8px, transparent 1.8px);
+    background-position: 83% 12%, 29% 79%;
+    background-size: 233px 191px, 137px 271px;
+    animation: lantern-dust-reverse 17s ease-in-out infinite alternate;
+}
+
+.lantern__hook {
+    position: absolute;
+    top: -44px;
+    left: 49px;
+    width: 142px;
+    height: 96px;
+    border: 6px solid #4b2b10;
+    border-bottom: 0;
+    border-radius: 50% 50% 0 0;
+    box-shadow:
+        inset 0 0 5px rgba(249, 199, 99, 0.38),
+        0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.lantern__body {
+    position: absolute;
+    top: 28px;
+    left: 50px;
+    width: 140px;
+    height: 230px;
+    border: 7px solid transparent;
+    border-radius: 42% 42% 38% 38%;
+    background:
+        linear-gradient(rgba(88, 38, 10, 0.2), rgba(13, 6, 2, 0.5)) padding-box,
+        conic-gradient(
+            #241206,
+            #a44716,
+            #4c2109,
+            #d06b20,
+            #311306,
+            #7f3511,
+            #241206
+        ) border-box;
+    box-shadow:
+        0 0 0 2px rgba(30, 13, 3, 0.95),
+        inset 0 0 18px rgba(255, 126, 31, 0.22),
+        0 0 28px rgba(226, 91, 16, 0.38),
+        18px 26px 34px rgba(0, 0, 0, 0.72);
+}
+
+.lantern__body::before,
+.lantern__body::after {
+    content: "";
+    position: absolute;
+    z-index: 3;
+    right: -31px;
+    left: -31px;
+    height: 20px;
+    border: 3px solid #783811;
+    background: linear-gradient(180deg, #6e2e0d, #190902);
+    box-shadow: inset 0 0 7px rgba(255, 130, 35, 0.3);
+}
+
+.lantern__body::before {
+    top: -19px;
+    border-radius: 50% 50% 20% 20%;
+}
+
+.lantern__body::after {
+    bottom: -17px;
+    border-radius: 20% 20% 50% 50%;
+}
+
+.lantern__glass {
+    position: absolute;
+    top: 13px;
+    left: -7px;
+    width: 140px;
+    height: 188px;
+    overflow: hidden;
+    border: 3px solid rgba(224, 171, 72, 0.7);
+    border-radius: 42% 42% 38% 38%;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    filter: contrast(1.16) brightness(1.14) sepia(0.24) saturate(1.08);
+    box-shadow:
+        inset 0 0 20px rgba(255, 178, 70, 0.48),
+        inset 0 0 42px rgba(88, 27, 3, 0.64),
+        0 0 25px rgba(255, 105, 20, 0.48);
+}
+
+.lantern__glass::before,
+.lantern__glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+}
+
+.lantern__glass::before {
+    opacity: 0.88;
+    mix-blend-mode: screen;
+    background:
+        radial-gradient(ellipse at 50% 69%, rgba(255, 105, 12, 0.48) 0 7%, transparent 24%),
+        conic-gradient(
+            from 205deg at 50% 72%,
+            transparent 0 34%,
+            rgba(255, 125, 18, 0.9) 38% 45%,
+            rgba(255, 233, 160, 0.96) 48% 52%,
+            rgba(255, 120, 12, 0.88) 55% 62%,
+            transparent 66% 100%
+        ),
+        linear-gradient(118deg, transparent 18%, rgba(255, 247, 218, 0.6) 21%, transparent 24%),
+        radial-gradient(circle at 35% 25%, rgba(255, 246, 213, 0.28), transparent 24%);
+    animation: flame-flicker 1.8s ease-in-out infinite alternate;
+}
+
+.lantern__glass::after {
+    opacity: 0.3;
+    background:
+        linear-gradient(78deg, transparent 33%, rgba(55, 31, 8, 0.75) 34%, transparent 35%),
+        linear-gradient(127deg, transparent 60%, rgba(255, 227, 164, 0.36) 61%, transparent 62%);
+}
+
+.lantern__bars {
+    position: absolute;
+    z-index: 4;
+    top: -2px;
+    bottom: -2px;
+    left: -25px;
+    width: 8px;
+    opacity: 0.88;
+    background: linear-gradient(90deg, #210d03, #964316, #321306);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.9);
+}
+
+.lantern__bars::before,
+.lantern__bars::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 180px;
+    width: 8px;
+    height: 230px;
+    background: inherit;
+    box-shadow: inherit;
+    transform-origin: center;
+}
+
+.lantern__bars::before {
+    transform: none;
+}
+
+.lantern__bars::after {
+    display: none;
+}
+
+.lantern__base {
+    position: absolute;
+    top: 265px;
+    left: 32px;
+    width: 176px;
+    height: 62px;
+    border: 4px solid #773711;
+    clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 208, 111, 0.08) 0 3px,
+            transparent 3px 13px
+        ),
+        linear-gradient(180deg, #72300d, #180902 70%);
+    box-shadow:
+        inset 0 0 12px rgba(255, 205, 105, 0.28),
+        0 7px 18px rgba(0, 0, 0, 0.75);
+}
+
+.secrets {
+    position: fixed;
+    z-index: 7;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: opacity 500ms ease;
+    -webkit-mask-image: radial-gradient(
+        circle 205px at var(--light-x, -500px) var(--light-y, -500px),
+        #000 0 43%,
+        rgba(0, 0, 0, 0.72) 66%,
+        transparent 100%
+    );
+    mask-image: radial-gradient(
+        circle 205px at var(--light-x, -500px) var(--light-y, -500px),
+        #000 0 43%,
+        rgba(0, 0, 0, 0.72) 66%,
+        transparent 100%
+    );
+}
+
+.lantern-mode .secrets {
+    opacity: 1;
+}
+
+.secret {
+    position: absolute;
+    max-width: 290px;
+    color: rgba(222, 169, 73, 0.88);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(14px, 1.05vw, 20px);
+    font-style: italic;
+    letter-spacing: 0.07em;
+    line-height: 1.5;
+    text-shadow:
+        0 0 7px rgba(238, 174, 65, 0.58),
+        0 0 18px rgba(134, 72, 12, 0.45);
+}
+
+.secret--one {
+    top: 17%;
+    left: 7%;
+    transform: rotate(-4deg);
+}
+
+.secret--two {
+    bottom: 13%;
+    left: 9%;
+    transform: rotate(2deg);
+}
+
+.secret--three {
+    top: 18%;
+    right: 5%;
+    transform: rotate(3deg);
+}
+
+.secret--four {
+    right: 7%;
+    bottom: 14%;
+    transform: rotate(-2deg);
+}
+
+.artifact-toggle {
+    position: fixed;
+    z-index: 8;
+    left: auto;
+    right: clamp(40px, 11vw, 220px);
+    top: auto;
+    padding: 8px 4px 14px;
+    border: 0;
+    color: rgba(218, 174, 92, 0.82);
+    background: transparent;
+    box-shadow: none;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    opacity: 0.74;
+    transition:
+        color 300ms ease,
+        opacity 300ms ease,
+        transform 300ms ease;
+}
+
+.artifact-toggle::after {
+    content: "";
+    position: absolute;
+    right: -14px;
+    bottom: 5px;
+    left: -14px;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(235, 185, 84, 0.62) 18%,
+        rgba(255, 216, 134, 0.95) 50%,
+        rgba(235, 185, 84, 0.62) 82%,
+        transparent
+    );
+    box-shadow: 0 0 7px rgba(217, 148, 38, 0.5);
+    transition:
+        transform 300ms ease,
+        box-shadow 300ms ease;
+}
+
+.artifact-toggle:hover,
+.artifact-toggle--active {
+    color: #e8bb65;
+    opacity: 1;
+    transform: translateY(-1px);
+}
+
+.artifact-toggle:hover::after,
+.artifact-toggle--active::after {
+    transform: scaleX(1.08);
+    box-shadow: 0 0 11px rgba(235, 169, 59, 0.72);
+}
+
+.artifact-toggle--active {
+    text-shadow: 0 0 8px rgba(236, 178, 69, 0.55);
+}
+
+.lens-toggle {
+    top: 59%;
+}
+
+.lantern-toggle {
+    top: 69%;
+}
+
+@keyframes cinematic-zoom {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.035);
+    }
+}
+
+@keyframes gate-dust {
+    0% {
+        transform: translate3d(-3%, 7%, 0) rotate(-1deg);
+        background-position: 13% 21%, 77% 64%;
+    }
+
+    48% {
+        transform: translate3d(2%, -1%, 0) rotate(0.5deg);
+        background-position: 19% 29%, 69% 52%;
+    }
+
+    100% {
+        transform: translate3d(-1%, -8%, 0) rotate(1deg);
+        background-position: 8% 12%, 84% 73%;
+    }
+}
+
+@keyframes sealed-shake {
+    0%,
+    100% {
+        transform: translateX(0) rotate(0);
+    }
+
+    20% {
+        transform: translateX(-7px) rotate(-0.35deg);
+    }
+
+    40% {
+        transform: translateX(6px) rotate(0.3deg);
+    }
+
+    60% {
+        transform: translateX(-4px) rotate(-0.2deg);
+    }
+
+    80% {
+        transform: translateX(3px) rotate(0.15deg);
+    }
+}
+
+@keyframes denied-darkness {
+    45% {
+        filter: brightness(0.62);
+    }
+}
+
+@keyframes broken-chain {
+    0% {
+        opacity: 0;
+        translate: 0 -15px;
+    }
+
+    20% {
+        opacity: 0.9;
+    }
+
+    100% {
+        opacity: 0;
+        translate: 0 75vh;
+        rotate: 18deg;
+    }
+}
+
+@keyframes chronicle-open {
+    0% {
+        transform: scale(1);
+        filter:
+            drop-shadow(0 0 18px rgba(179, 116, 34, 0.2))
+            brightness(1);
+    }
+
+    48% {
+        transform: scale(1.035);
+        filter:
+            drop-shadow(0 0 22px rgba(196, 132, 46, 0.28))
+            brightness(1.06);
+    }
+
+    100% {
+        transform: scale(1.34);
+        opacity: 0;
+        filter:
+            drop-shadow(0 0 30px rgba(214, 148, 55, 0.34))
+            brightness(1.2)
+            blur(3px);
+    }
+}
+
+@keyframes cover-unseal {
+    0%,
+    28% {
+        transform: rotateY(0);
+    }
+
+    72% {
+        transform: rotateY(-34deg) translateX(-2%);
+    }
+
+    100% {
+        transform: rotateY(-76deg) translateX(-7%);
+        opacity: 0.12;
+    }
+}
+
+@keyframes drifting-dust {
+    0% {
+        transform: translate3d(-3%, 7%, 0) rotate(-1.5deg) scale(1);
+        background-position: 7% 13%, 41% 72%, 88% 24%, 63% 91%;
+    }
+
+    37% {
+        transform: translate3d(2%, 1%, 0) rotate(0.8deg) scale(1.025);
+        background-position: 11% 19%, 38% 66%, 91% 29%, 58% 84%;
+    }
+
+    71% {
+        transform: translate3d(-1%, -5%, 0) rotate(-0.4deg) scale(0.99);
+        background-position: 4% 8%, 46% 76%, 85% 18%, 68% 94%;
+    }
+
+    100% {
+        transform: translate3d(4%, -8%, 0) rotate(1.2deg) scale(1.04);
+        background-position: 13% 4%, 35% 81%, 94% 14%, 55% 97%;
+    }
+}
+
+@keyframes ambient-fog {
+    from {
+        transform: translate3d(-3%, 0, 0) scale(1);
+    }
+
+    to {
+        transform: translate3d(4%, -1%, 0) scale(1.08);
+    }
+}
+
+@keyframes breathing-glow {
+    from {
+        opacity: 0.65;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes rotate-runes {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes lantern-breath {
+    from {
+        opacity: 0.58;
+        transform: translate(-50%, -50%) scale(0.97);
+    }
+
+    to {
+        opacity: 0.82;
+        transform: translate(-50%, -50%) scale(1.035);
+    }
+}
+
+@keyframes lantern-dust {
+    0% {
+        transform: translate3d(-5%, 8%, 0) rotate(-4deg) scale(0.96);
+        background-position: 11% 19%, 72% 64%, 43% 88%;
+    }
+
+    43% {
+        transform: translate3d(4%, 0, 0) rotate(3deg) scale(1.05);
+        background-position: 17% 31%, 65% 52%, 49% 76%;
+    }
+
+    100% {
+        transform: translate3d(-1%, -9%, 0) rotate(7deg) scale(1);
+        background-position: 6% 8%, 81% 38%, 35% 91%;
+    }
+}
+
+@keyframes lantern-dust-reverse {
+    0% {
+        transform: translate3d(5%, -7%, 0) rotate(5deg) scale(1.04);
+        background-position: 83% 12%, 29% 79%;
+    }
+
+    52% {
+        transform: translate3d(-3%, 2%, 0) rotate(-2deg) scale(0.97);
+        background-position: 76% 23%, 36% 68%;
+    }
+
+    100% {
+        transform: translate3d(2%, 9%, 0) rotate(-7deg) scale(1.02);
+        background-position: 91% 31%, 21% 88%;
+    }
+}
+
+@keyframes flame-flicker {
+    from {
+        transform: translateY(2px) scaleX(0.94) scaleY(0.98);
+        filter: brightness(0.95);
+    }
+
+    to {
+        transform: translateY(-3px) scaleX(1.06) scaleY(1.08);
+        filter: brightness(1.18);
+    }
+}
+
+@media (max-width: 1500px) {
+    .page {
+        padding-left: clamp(70px, 12vw, 180px);
+    }
+
+    .page img {
+        height: 91%;
+    }
+
+    .artifact-toggle {
+        right: 42px;
+        font-size: 12px;
+    }
+
+    .lantern {
+        scale: 0.84;
+    }
+}
+
+@media (max-width: 1100px) {
+    .background {
+        background-position: 20% center;
+    }
+
+    .page {
+        padding-left: 0;
+    }
+
+    .page img {
+        height: 86%;
+        max-width: 80vw;
+    }
+
+    .page::before {
+        transform: none;
+    }
+
+    .artifact-toggle {
+        right: 22px;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+    }
+
+    .lens-toggle {
+        top: 72%;
+    }
+
+    .lantern-toggle {
+        top: 81%;
+    }
+
+    .lantern {
+        scale: 0.7;
+    }
+}
+
+@media (max-width: 850px), (max-height: 760px) {
+    .sealed-book {
+        width: min(98vw, 720px);
+        height: min(98vh, 890px);
+    }
+
+    .access-form {
+        right: 8%;
+        bottom: 0;
+        left: 8%;
+        gap: 6px;
+        padding: 12px 10px 6px;
+    }
+
+    .access-code {
+        grid-template-columns: repeat(8, clamp(27px, 7vw, 42px));
+        gap: 4px;
+    }
+
+    .access-form__message,
+    .access-submit {
+        font-size: 10px;
+    }
+
+    .access-submit {
+        padding: 8px 20px;
+    }
+}
+
+@media (max-aspect-ratio: 4 / 3) {
+    .background {
+        background-position: 20% center;
+    }
+
+    .page {
+        padding-left: 0;
+    }
+
+    .page::before {
+        transform: none;
+    }
+
+    .artifact-toggle {
+        right: 22px;
+    }
+}
+
+@media (max-width: 700px) {
+    header,
+    footer {
+        height: 0;
+    }
+
+    .background,
+    .atmosphere {
+        inset: 0;
+    }
+
+    .page img {
+        width: 96vw;
+        height: auto;
+        max-height: 94%;
+    }
+}
+
+@media (hover: none), (pointer: coarse) {
+    .magnifier,
+    .lantern,
+    .secrets,
+    .artifact-toggle {
+        display: none;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .lens-mode .page img,
+    .lantern-mode {
+        cursor: none;
+    }
+
+    .lantern-mode .artifact-toggle {
+        cursor: pointer;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .access-gate::before,
+    .background,
+    .atmosphere::before,
+    .atmosphere::after,
+    .page::before {
+        animation: none;
+    }
+
+    .magnifier__runes {
+        animation: none;
+    }
+
+    .lantern__light,
+    .lantern__light::before,
+    .lantern__light::after,
+    .lantern__glass::before {
+        animation: none;
+    }
+}

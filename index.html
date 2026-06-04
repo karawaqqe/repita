@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Хроника запретных событий</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <header></header>
+
+    <section class="access-gate" aria-label="Доступ к запретной хронике">
+        <div class="access-gate__dust" aria-hidden="true"></div>
+        <div class="sealed-book">
+            <img src="./img/closebook.png" alt="Закрытая запретная хроника">
+            <form class="access-form" autocomplete="off">
+                <p class="access-form__message" aria-live="polite">Введите код допуска</p>
+                <div class="access-code" aria-label="Введите пароль">
+                    <input maxlength="1" inputmode="text" aria-label="Символ 1">
+                    <input maxlength="1" inputmode="text" aria-label="Символ 2">
+                    <input maxlength="1" inputmode="text" aria-label="Символ 3">
+                    <input maxlength="1" inputmode="text" aria-label="Символ 4">
+                    <input maxlength="1" inputmode="text" aria-label="Символ 5">
+                    <input maxlength="1" inputmode="text" aria-label="Символ 6">
+                    <input maxlength="1" inputmode="text" aria-label="Символ 7">
+                    <input class="access-code__seal" value="✦" aria-label="Печать" readonly tabindex="-1">
+                </div>
+                <button class="access-submit" type="submit">ОТКРЫТЬ ХРОНИКУ</button>
+            </form>
+        </div>
+    </section>
+
+    <div class="background" aria-hidden="true"></div>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <div class="magnifier" aria-hidden="true">
+        <div class="magnifier__glass"></div>
+        <div class="magnifier__runes"></div>
+        <div class="magnifier__handle"></div>
+    </div>
+    <div class="lantern" aria-hidden="true">
+        <div class="lantern__light"></div>
+        <div class="lantern__hook"></div>
+        <div class="lantern__body">
+            <div class="lantern__glass"></div>
+            <div class="lantern__bars"></div>
+        </div>
+        <div class="lantern__base"></div>
+    </div>
+    <div class="secrets" aria-hidden="true">
+        <span class="secret secret--one">фростморн</span>
+        <span class="secret secret--two">у нас</span>
+        <span class="secret secret--three">мы</span>
+        <span class="secret secret--four">тебя ждём</span>
+    </div>
+    <button class="artifact-toggle lens-toggle" type="button" aria-pressed="false">
+        ВЗЯТЬ ЛУПУ
+    </button>
+    <button class="artifact-toggle lantern-toggle" type="button" aria-pressed="false">
+        ВЗЯТЬ ФОНАРЬ
+    </button>
+
+    <main>
+        <section class="page"><img src="./img/pages/1.png" alt="Страница 1"></section>
+        <section class="page"><img src="./img/pages/2.png" alt="Страница 2"></section>
+        <section class="page"><img src="./img/pages/3.png" alt="Страница 3"></section>
+        <section class="page"><img src="./img/pages/4.png" alt="Страница 4"></section>
+        <section class="page"><img src="./img/pages/5.png" alt="Страница 5"></section>
+        <section class="page"><img src="./img/pages/6.png" alt="Страница 6"></section>
+        <section class="page"><img src="./img/pages/7.png" alt="Страница 7"></section>
+        <section class="page"><img src="./img/pages/8.png" alt="Страница 8"></section>
+        <section class="page"><img src="./img/pages/9.png" alt="Страница 9"></section>
+        <section class="page"><img src="./img/pages/10.png" alt="Страница 10"></section>
+        <section class="page"><img src="./img/pages/11.png" alt="Страница 11"></section>
+        <section class="page"><img src="./img/pages/12.png" alt="Страница 12"></section>
+    </main>
+
+    <footer></footer>
+
+    <script>
+        (() => {
+            const password = "hewaits";
+            const gate = document.querySelector(".access-gate");
+            const form = document.querySelector(".access-form");
+            const message = document.querySelector(".access-form__message");
+            const fields = [...document.querySelectorAll(".access-code input:not([readonly])")];
+            const deniedWhisper = new Audio("./publick/sounds/ghost.mp3");
+
+            deniedWhisper.volume = 0.08;
+
+            function readCode() {
+                return fields.map((field) => field.value).join("");
+            }
+
+            function denyAccess() {
+                gate.classList.remove("access-gate--denied");
+                void gate.offsetWidth;
+                gate.classList.add("access-gate--denied");
+                message.textContent = "Хроника отвергает это имя";
+
+                deniedWhisper.currentTime = 0;
+                deniedWhisper.play().catch(() => {});
+
+                setTimeout(() => {
+                    gate.classList.remove("access-gate--denied");
+                    message.textContent = "Введите код допуска";
+                }, 900);
+            }
+
+            function grantAccess() {
+                fields.forEach((field) => {
+                    field.disabled = true;
+                });
+
+                message.textContent = "Доступ дозволен";
+                gate.classList.add("access-gate--opening");
+
+                setTimeout(() => {
+                    gate.classList.add("access-gate--open");
+                    document.body.classList.add("chronicle-entered");
+                }, 1450);
+            }
+
+            fields.forEach((field, index) => {
+                field.addEventListener("input", () => {
+                    field.value = field.value.toLowerCase().replace(/[^a-z]/g, "");
+
+                    if (field.value && fields[index + 1]) {
+                        fields[index + 1].focus();
+                    }
+                });
+
+                field.addEventListener("keydown", (event) => {
+                    if (event.key === "Backspace" && !field.value && fields[index - 1]) {
+                        fields[index - 1].focus();
+                    }
+                });
+
+                field.addEventListener("paste", (event) => {
+                    event.preventDefault();
+                    const pasted = event.clipboardData
+                        .getData("text")
+                        .toLowerCase()
+                        .replace(/[^a-z]/g, "")
+                        .slice(0, fields.length);
+
+                    pasted.split("").forEach((letter, letterIndex) => {
+                        fields[letterIndex].value = letter;
+                    });
+
+                    fields[Math.min(pasted.length, fields.length - 1)].focus();
+                });
+            });
+
+            form.addEventListener("submit", (event) => {
+                event.preventDefault();
+
+                if (readCode() === password) {
+                    grantAccess();
+                } else {
+                    denyAccess();
+                }
+            });
+
+            fields[0].focus();
+        })();
+    </script>
+    <script>
+        const portfolio = document.querySelector("main");
+        const pageSound = new Audio("./publick/sounds/page.mp3");
+        const windSound = new Audio("./publick/wind.mp3");
+        const ghostSound = new Audio("./publick/sounds/ghost.mp3");
+        const pages = document.querySelectorAll(".page");
+        const magnifier = document.querySelector(".magnifier");
+        const magnifierGlass = document.querySelector(".magnifier__glass");
+        const lensToggle = document.querySelector(".lens-toggle");
+        const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+        windSound.loop = true;
+        ghostSound.loop = true;
+        windSound.volume = 0.12;
+        pageSound.volume = 0.35;
+        ghostSound.volume = 0.05;
+
+        let soundEnabled = false;
+        let currentPage = 0;
+        let wheelLocked = false;
+
+        function startAtmosphere() {
+            if (soundEnabled) return;
+
+            soundEnabled = true;
+            windSound.play().catch(() => {});
+            ghostSound.play().catch(() => {});
+        }
+
+        document.addEventListener("click", startAtmosphere, { once: true });
+        document.addEventListener("touchstart", startAtmosphere, { once: true });
+        document.addEventListener("keydown", startAtmosphere, { once: true });
+
+        function goToPage(nextPage) {
+            const safePage = Math.max(0, Math.min(nextPage, pages.length - 1));
+
+            if (safePage === currentPage) return false;
+
+            currentPage = safePage;
+            portfolio.scrollTo({
+                left: currentPage * portfolio.clientWidth,
+                behavior: "smooth"
+            });
+
+            if (soundEnabled) {
+                pageSound.currentTime = 0;
+                pageSound.play().catch(() => {});
+            }
+
+            return true;
+        }
+
+        portfolio.addEventListener("wheel", (event) => {
+            if (Math.abs(event.deltaY) < 10 && Math.abs(event.deltaX) < 10) {
+                return;
+            }
+
+            event.preventDefault();
+
+            if (wheelLocked) return;
+
+            const direction =
+                Math.abs(event.deltaY) >= Math.abs(event.deltaX)
+                    ? Math.sign(event.deltaY)
+                    : Math.sign(event.deltaX);
+
+            if (!goToPage(currentPage + direction)) return;
+
+            wheelLocked = true;
+            setTimeout(() => {
+                wheelLocked = false;
+            }, 650);
+        }, { passive: false });
+
+        portfolio.addEventListener("scrollend", () => {
+            currentPage = Math.round(
+                portfolio.scrollLeft / portfolio.clientWidth
+            );
+        });
+
+        if (finePointer.matches) {
+            const lensSize = 280;
+            const zoom = 1.65;
+            let hoveredImage = null;
+            let targetX = 0;
+            let targetY = 0;
+            let lensX = 0;
+            let lensY = 0;
+            let animationFrame;
+            let lensActive = false;
+
+            function hideMagnifier() {
+                hoveredImage = null;
+                pages.forEach((page) => page.classList.remove("page--reading"));
+                magnifier.classList.remove("magnifier--visible");
+
+                if (animationFrame) {
+                    cancelAnimationFrame(animationFrame);
+                    animationFrame = null;
+                }
+            }
+
+            lensToggle.addEventListener("click", () => {
+                lensActive = !lensActive;
+                document.body.classList.toggle("lens-mode", lensActive);
+                lensToggle.classList.toggle("lens-toggle--active", lensActive);
+                lensToggle.setAttribute("aria-pressed", String(lensActive));
+                lensToggle.textContent = lensActive
+                    ? "ПОЛОЖИТЬ ЛУПУ"
+                    : "ВЗЯТЬ ЛУПУ";
+
+                if (!lensActive) {
+                    hideMagnifier();
+                }
+            });
+
+            function renderMagnifier() {
+                lensX += (targetX - lensX) * 0.24;
+                lensY += (targetY - lensY) * 0.24;
+
+                magnifier.style.transform =
+                    `translate3d(${lensX - lensSize / 2}px, ${lensY - lensSize / 2}px, 0)`;
+
+                if (hoveredImage) {
+                    const rect = hoveredImage.getBoundingClientRect();
+                    const localX = lensX - rect.left;
+                    const localY = lensY - rect.top;
+
+                    magnifierGlass.style.backgroundImage =
+                        `url("${hoveredImage.currentSrc || hoveredImage.src}")`;
+                    magnifierGlass.style.backgroundSize =
+                        `${rect.width * zoom}px ${rect.height * zoom}px`;
+                    magnifierGlass.style.backgroundPosition =
+                        `${lensSize / 2 - localX * zoom}px ${lensSize / 2 - localY * zoom}px`;
+                }
+
+                animationFrame = requestAnimationFrame(renderMagnifier);
+            }
+
+            pages.forEach((page) => {
+                const image = page.querySelector("img");
+
+                image.addEventListener("pointerenter", (event) => {
+                    if (!lensActive) return;
+
+                    hoveredImage = image;
+                    targetX = event.clientX;
+                    targetY = event.clientY;
+                    lensX = targetX;
+                    lensY = targetY;
+                    page.classList.add("page--reading");
+                    magnifier.classList.add("magnifier--visible");
+
+                    if (!animationFrame) {
+                        renderMagnifier();
+                    }
+                });
+
+                image.addEventListener("pointermove", (event) => {
+                    if (!lensActive) return;
+
+                    targetX = event.clientX;
+                    targetY = event.clientY;
+                });
+
+                image.addEventListener("pointerleave", hideMagnifier);
+            });
+        }
+    </script>
+    <script>
+        (() => {
+            const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+            if (!finePointer.matches) return;
+
+            const lanternArtifact = document.querySelector(".lantern");
+            const lanternArtifactGlass = document.querySelector(".lantern__glass");
+            const lanternArtifactToggle = document.querySelector(".lantern-toggle");
+            const lensArtifactToggle = document.querySelector(".lens-toggle");
+            const chroniclePages = document.querySelectorAll(".page");
+            const lanternLensWidth = 140;
+            const lanternLensHeight = 188;
+            const lanternZoom = 1.38;
+
+            let lanternActive = false;
+            let hoveredChronicleImage = null;
+            let targetX = window.innerWidth / 2;
+            let targetY = window.innerHeight / 2;
+            let lanternX = targetX;
+            let lanternY = targetY;
+            let lanternAnimationFrame;
+
+            function clearLanternImage() {
+                hoveredChronicleImage = null;
+                lanternArtifactGlass.style.backgroundImage = "none";
+                chroniclePages.forEach((page) => {
+                    page.classList.remove("page--lantern-reading");
+                });
+            }
+
+            function renderLantern() {
+                lanternX += (targetX - lanternX) * 0.105;
+                lanternY += (targetY - lanternY) * 0.105;
+
+                lanternArtifact.style.transform =
+                    `translate3d(${lanternX - 113}px, ${lanternY - 135}px, 0) rotate(-1.5deg)`;
+                document.documentElement.style.setProperty("--light-x", `${lanternX}px`);
+                document.documentElement.style.setProperty("--light-y", `${lanternY}px`);
+
+                if (hoveredChronicleImage) {
+                    const rect = hoveredChronicleImage.getBoundingClientRect();
+                    const localX = lanternX - rect.left;
+                    const localY = lanternY - rect.top;
+
+                    lanternArtifactGlass.style.backgroundImage =
+                        `url("${hoveredChronicleImage.currentSrc || hoveredChronicleImage.src}")`;
+                    lanternArtifactGlass.style.backgroundSize =
+                        `${rect.width * lanternZoom}px ${rect.height * lanternZoom}px`;
+                    lanternArtifactGlass.style.backgroundPosition =
+                        `${lanternLensWidth / 2 - localX * lanternZoom}px ${lanternLensHeight / 2 - localY * lanternZoom}px`;
+                }
+
+                lanternAnimationFrame = requestAnimationFrame(renderLantern);
+            }
+
+            function setLanternActive(active) {
+                if (active && lensArtifactToggle.getAttribute("aria-pressed") === "true") {
+                    lensArtifactToggle.click();
+                }
+
+                lanternActive = active;
+                document.body.classList.toggle("lantern-mode", active);
+                lanternArtifact.classList.toggle("lantern--visible", active);
+                lanternArtifactToggle.classList.toggle("lantern-toggle--active", active);
+                lanternArtifactToggle.setAttribute("aria-pressed", String(active));
+                lanternArtifactToggle.textContent = active
+                    ? "ПОЛОЖИТЬ ФОНАРЬ"
+                    : "ВЗЯТЬ ФОНАРЬ";
+
+                if (active) {
+                    const elementUnderLight = document.elementFromPoint(targetX, targetY);
+                    const imageUnderLight = elementUnderLight?.closest(".page img");
+
+                    if (imageUnderLight) {
+                        hoveredChronicleImage = imageUnderLight;
+                        imageUnderLight.closest(".page").classList.add("page--lantern-reading");
+                    }
+
+                    if (!lanternAnimationFrame) {
+                        renderLantern();
+                    }
+                } else {
+                    clearLanternImage();
+                    cancelAnimationFrame(lanternAnimationFrame);
+                    lanternAnimationFrame = null;
+                }
+            }
+
+            lanternArtifactToggle.addEventListener("click", () => {
+                setLanternActive(!lanternActive);
+            });
+
+            lensArtifactToggle.addEventListener("click", () => {
+                if (
+                    lanternActive &&
+                    lensArtifactToggle.getAttribute("aria-pressed") === "true"
+                ) {
+                    setLanternActive(false);
+                }
+            });
+
+            document.addEventListener("pointermove", (event) => {
+                targetX = event.clientX;
+                targetY = event.clientY;
+            });
+
+            chroniclePages.forEach((page) => {
+                const image = page.querySelector("img");
+
+                image.addEventListener("pointerenter", () => {
+                    if (!lanternActive) return;
+
+                    hoveredChronicleImage = image;
+                    page.classList.add("page--lantern-reading");
+                });
+
+                image.addEventListener("pointerleave", () => {
+                    if (!lanternActive) return;
+
+                    clearLanternImage();
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
