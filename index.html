@@ -72,6 +72,7 @@
         <section class="page"><img src="./img/pages/10.png" alt="Страница 10"></section>
         <section class="page"><img src="./img/pages/11.png" alt="Страница 11"></section>
         <section class="page"><img src="./img/pages/12.png" alt="Страница 12"></section>
+        <section class="page"><img src="./img/pages/repita lang.png" alt="Страница 13"></section>
     </main>
 
     <footer></footer>
@@ -173,7 +174,6 @@
         const magnifier = document.querySelector(".magnifier");
         const magnifierGlass = document.querySelector(".magnifier__glass");
         const lensToggle = document.querySelector(".lens-toggle");
-        const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
 
         windSound.loop = true;
         ghostSound.loop = true;
@@ -244,7 +244,6 @@
             );
         });
 
-        if (finePointer.matches) {
             const lensSize = 280;
             const zoom = 1.65;
             let hoveredImage = null;
@@ -303,23 +302,31 @@
                 animationFrame = requestAnimationFrame(renderMagnifier);
             }
 
+            function showMagnifier(page, image, event) {
+                if (!lensActive) return;
+
+                hoveredImage = image;
+                targetX = event.clientX;
+                targetY = event.clientY;
+                lensX = targetX;
+                lensY = targetY;
+                page.classList.add("page--reading");
+                magnifier.classList.add("magnifier--visible");
+
+                if (!animationFrame) {
+                    renderMagnifier();
+                }
+            }
+
             pages.forEach((page) => {
                 const image = page.querySelector("img");
 
                 image.addEventListener("pointerenter", (event) => {
-                    if (!lensActive) return;
+                    showMagnifier(page, image, event);
+                });
 
-                    hoveredImage = image;
-                    targetX = event.clientX;
-                    targetY = event.clientY;
-                    lensX = targetX;
-                    lensY = targetY;
-                    page.classList.add("page--reading");
-                    magnifier.classList.add("magnifier--visible");
-
-                    if (!animationFrame) {
-                        renderMagnifier();
-                    }
+                image.addEventListener("pointerdown", (event) => {
+                    showMagnifier(page, image, event);
                 });
 
                 image.addEventListener("pointermove", (event) => {
@@ -329,16 +336,15 @@
                     targetY = event.clientY;
                 });
 
-                image.addEventListener("pointerleave", hideMagnifier);
+                image.addEventListener("pointerleave", (event) => {
+                    if (event.pointerType !== "mouse") return;
+
+                    hideMagnifier();
+                });
             });
-        }
     </script>
     <script>
         (() => {
-            const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
-
-            if (!finePointer.matches) return;
-
             const lanternArtifact = document.querySelector(".lantern");
             const lanternArtifactGlass = document.querySelector(".lantern__glass");
             const lanternArtifactToggle = document.querySelector(".lantern-toggle");
@@ -435,10 +441,13 @@
                 }
             });
 
-            document.addEventListener("pointermove", (event) => {
+            function updateLanternPosition(event) {
                 targetX = event.clientX;
                 targetY = event.clientY;
-            });
+            }
+
+            document.addEventListener("pointermove", updateLanternPosition);
+            document.addEventListener("pointerdown", updateLanternPosition);
 
             chroniclePages.forEach((page) => {
                 const image = page.querySelector("img");
@@ -450,8 +459,16 @@
                     page.classList.add("page--lantern-reading");
                 });
 
-                image.addEventListener("pointerleave", () => {
+                image.addEventListener("pointerdown", () => {
                     if (!lanternActive) return;
+
+                    hoveredChronicleImage = image;
+                    page.classList.add("page--lantern-reading");
+                });
+
+                image.addEventListener("pointerleave", (event) => {
+                    if (!lanternActive) return;
+                    if (event.pointerType !== "mouse") return;
 
                     clearLanternImage();
                 });

@@ -1090,6 +1090,53 @@ main::-webkit-scrollbar {
     }
 }
 
+@media (min-width: 1700px) and (max-width: 2100px) and (min-height: 900px) and (max-height: 1200px) and (min-aspect-ratio: 16 / 10) {
+    .sealed-book {
+        width: min(48vw, 920px);
+        height: 94vh;
+    }
+
+    .access-form {
+        right: 14%;
+        bottom: 1.4%;
+        left: 14%;
+        padding-bottom: 14px;
+    }
+
+    .background {
+        background-position: center;
+        background-size: cover;
+    }
+
+    .page {
+        padding-left: min(21vw, 404px);
+    }
+
+    .page::before {
+        width: min(48vw, 860px);
+        height: 88%;
+        transform: translateX(min(10vw, 190px));
+    }
+
+    .page img {
+        height: min(94vh, 1016px);
+    }
+
+    .artifact-toggle {
+        right: clamp(48px, 4vw, 80px);
+        width: 190px;
+        text-align: center;
+    }
+
+    .lens-toggle {
+        top: 60%;
+    }
+
+    .lantern-toggle {
+        top: 70%;
+    }
+}
+
 @media (max-width: 1500px) {
     .page {
         padding-left: clamp(70px, 12vw, 180px);
@@ -1211,7 +1258,7 @@ main::-webkit-scrollbar {
     }
 }
 
-@media (hover: none), (pointer: coarse) {
+@media (max-width: 700px) {
     .magnifier,
     .lantern,
     .secrets,
